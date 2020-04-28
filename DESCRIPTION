@@ -1,15 +1,10 @@
-Package: shinyAppDemo
+Package: CIMSReCalc
 Type: Package
-Title: Implements a demo shiny application inside a package
-Version: 0.1.0
-Author: Mark Sellors
-Maintainer: Mark Sellos <msellors@mango-solutions.com>
-Description: A small package that implements the 'geyser' shiny app inside a 
-    package.
-    The geyser shiny app is the small app provided by the RStudio IDE when you
-    click to create a new "Shiny Web App...".
-    In this package that shiny app has been broken up into parts as a
-    demonstration of how one might approach the packaging of such an app.
+Title: CIMS Post Foundation Transcript Recalculator
+Version: 1.1.0
+Author: Dr. Eduardo M. Lacap, Jr.
+Maintainer: Eduardo M. Lacap, Jr. <eduardo.jr@hct.edu.om>
+Description: A Package that recalculates the grade point averages of students in their transcript
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
