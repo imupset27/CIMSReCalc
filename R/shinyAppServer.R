@@ -1,4 +1,4 @@
-#' Shiny app server function
+#' CIMSReCalc app server function
 #'
 #' @param input provided by shiny
 #' @param output provided by shiny

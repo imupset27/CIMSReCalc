@@ -1,9 +1,9 @@
-#' Shiny app server object
+#' CIMSReCalc app server object
 #'
 #' @importFrom graphics hist
 #' @import shiny
 
-# create the shiny application user interface
+# create the CIMSReCalc application user interface
 shinyAppUI <- fluidPage(
   #tags$script(inactivity),
   titlePanel("CIMS Transcript Re-Calculator by IT Department"),

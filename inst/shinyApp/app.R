@@ -1,1 +1,1 @@
-shinyAppDemo::launchApp()
+CIMSReCalc::launchApp()

@@ -1,4 +1,4 @@
-#' launches the shinyAppDemo app
+#' launches the CIMSReCalc app
 #'
 #' @export launchApp
 #'
