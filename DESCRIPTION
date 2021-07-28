@@ -2,8 +2,8 @@ Package: CIMSReCalc
 Type: Package
 Title: CIMS Post Foundation Transcript Recalculator
 Version: 1.1.0
-Author: Dr. Eduardo M. Lacap, Jr.
-Maintainer: Eduardo M. Lacap, Jr. <eduardo.jr@hct.edu.om>
+Author: Dr. 
+Maintainer: 
 Description: A Package that recalculates the grade point averages of students in their transcript
 License: MIT + file LICENSE
 Encoding: UTF-8
