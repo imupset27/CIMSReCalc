@@ -1,7 +1,5 @@
 library(shiny)
-library(auth0)
 
-setwd("/srv/shiny-server/app")
 timeoutSeconds <- 900
 
 inactivity <- sprintf("function idleTimer() {
@@ -24,15 +22,55 @@ t = setTimeout(logout, %s);  // time is in milliseconds (1000 is 1 second)
 idleTimer();", timeoutSeconds*1000, timeoutSeconds, timeoutSeconds*1000)
 
 
-auth0_ui(shinyUI(fluidPage(
+
+
+
+
+
+shinyUI(fluidPage(
   tags$script(inactivity),
-  titlePanel(
-    h4("CIMS Transcript Re-Calculator Web App"),
-    windowTitle = "CIMS ReCalc"
-    
-  ),
+  titlePanel("CIMS Transcript Re-Calculator by IT Department"),
   sidebarLayout(
-    uiOutput("sp"),
+    sidebarPanel(
+      fileInput("uploadedfile","Upload the file"), # fileinput() function is used to get the file upload contorl option
+      helpText("Download the Student's POST FOUNDATION Transcript 
+               from the CIMS. Save the extacted Excel File with 
+               XLSX extension file name and upload 
+               on this web app. Prefered filename should be the 
+               student's ID number e.g. 16S12345.xlsx"),
+      br(),
+      helpText("Not Counted (NC) courses should be properly indicated on the transcript. 'P' or 'F' 
+               should be present for Counted Courses on the 'RESULT' column of the transcript."),
+      br(),
+      helpText("Raw Data - represents the 'cleaned' version of 
+               the student post foundation transcript wherein 
+               'not counted' (NC) and withdrawn (W) courses 
+               were omitted."),
+      downloadButton("downloadRawData", "Raw Data"),
+      br(),
+      # helpText("Semester GPA1 is for a student who had at least 
+      #          one 'mixing status'  semester given that the lower 
+      #          level is not yet completed (e.g. in diploma second year, 
+      #          at least one course is yet to be passed)"),
+      # 
+      # downloadButton("downloadGPA1", "Semester GPA1"),
+      
+      # helpText("Semester GPA2 is for a student who had at least 
+      #          one 'mixing status' semester given that the 
+      #          lower level is already completed (e.g. in diploma 
+      #          second year, all courses passed) OR both levels 
+      #          are already completed (e.g. Diploma 2nd and 
+      #          Advanced Diploma) OR OJT Status Students"),
+      
+      downloadButton("downloadGPA2", "Semester GPA"),
+      br(),
+      downloadButton("downloadLGPA", "Cumulative GPA"),
+      br(),
+      downloadButton("downloadOGPA", "Overall Cum GPA"),
+      # helpText("NOTE: for a student who had NEVER 
+      #          mixed a semester, GPA1 and GPA2 will 
+      #          give the similar results."),
+      tags$hr() ),
     mainPanel(
       uiOutput("tb")
       
@@ -109,5 +147,5 @@ auth0_ui(shinyUI(fluidPage(
       # runApp(appDir="C:/Users/656/Dropbox/RMarkdown Projects/Recalculation/Recalculation FINAL5")
     )
     
-  ), logoutButton()
-)))
+  )
+))
