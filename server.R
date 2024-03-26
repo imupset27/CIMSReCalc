@@ -1,11 +1,12 @@
 library(data.table)
-library(shiny)
+library(auth0)
+#setwd("/srv/shiny-server/app")
 # use the below options code if you wish to increase the file input limit, in this example file input limit is increased from 5MB to 9MB
 # options(shiny.maxRequestSize = 9*1024^2)
 
 #source("C:\\Users\\656\\Dropbox\\RMarkdown Projects\\Recalculation\\Recalculation FINAL5\\saveData Function Recalculation.R")
 
-shinyServer(function(input,output,session){
+auth0_server(shinyServer(function(input,output,session){
   
   
   
@@ -22,9 +23,9 @@ shinyServer(function(input,output,session){
                  "Course.Code","Course.Name",
                  "Credit.Hours","Grade",
                  "Point", "Notes", "Result"
-                 )
                )
-    })
+    )
+  })
   
   Report1 <- reactive({
     Report <- Report()
@@ -34,17 +35,17 @@ shinyServer(function(input,output,session){
         Report[2,2],
         1,
         15
-        )
       )
-    })
-    
+    )
+  })
+  
   Report2 <- reactive({
     Report1 <- Report1()
     transform(
       as.data.frame(Report1),
       AcadLevel = Report1[,1]
-      )
-    })
+    )
+  })
   
   Report3 <- reactive({
     Report2 <- Report2()
@@ -56,14 +57,14 @@ shinyServer(function(input,output,session){
             'Diploma Second Year',
             'Advanced Diploma',
             'Bachelor'
-            ),
+          ),
         as.character(Report2$AcadLevel),
         NA
-        )
       )
+    )
   })
   
-library(zoo)
+  library(zoo)
   
   Report4 <- reactive({
     Report3 <- Report3()
@@ -72,10 +73,10 @@ library(zoo)
       AcadLevel = na.locf(
         as.character(Report3$AcadLevel),
         fromLast = FALSE
-        )
       )
+    )
   })
- 
+  
   Report5 <- reactive({
     Report4 <- Report4()
     transform(
@@ -83,10 +84,10 @@ library(zoo)
       AYSem = substr(Report4[,1],
                      3,
                      26
-                     )
       )
+    )
   }) 
-
+  
   
   Report6 <- reactive({
     Report5 <- Report5()
@@ -95,7 +96,7 @@ library(zoo)
       Yearonly = substr(Report5[,1],
                         3,
                         6
-                        )
+      )
     )
   })
   
@@ -121,7 +122,7 @@ library(zoo)
         test = Report8$Yearonly != "NA",
         yes = as.character(Report8$AYSem),
         no = "NA"
-        )
+      )
     )
   })
   
@@ -130,7 +131,7 @@ library(zoo)
     transform(
       as.data.frame(Report9),
       Yearonly = na.locf(as.character(Report9$Yearonly),fromLast = FALSE)
-                )
+    )
   })
   
   Report11 <- reactive({
@@ -141,7 +142,7 @@ library(zoo)
   Report12 <- reactive({
     Report11 <- Report11()
     transform(as.data.frame(Report11),
-    Credit.Hours = as.numeric(Credit.Hours))
+              Credit.Hours = as.numeric(Credit.Hours))
     
   })
   
@@ -165,14 +166,14 @@ library(zoo)
                      "AcadLevel", "AYSemesterNo")
     
     setnames(Report14, columnNames)
-      
+    
   })
   
   
   Report16 <- reactive({
     Report15 <- Report15()
     transform(as.data.frame(Report15),
-    Point=round(as.numeric(Report15$Point), 2))
+              Point=round(as.numeric(Report15$Point), 2))
   })
   
   
@@ -204,7 +205,7 @@ library(zoo)
     Report19[ , c(8:10,1:7) ]
   })
   
-#Persistent data storage####
+  #Persistent data storage####
   # observeEvent(input$uploadedfile, {
   #   saveData(Report20())
   # })
@@ -214,7 +215,7 @@ library(zoo)
   # }) #invoke the two output directories and two functions saveData and loadData
   # 
   
-#Semester GPA Calculations####  
+  #Semester GPA Calculations####  
   library(dplyr)
   
   Report21 <- reactive({
@@ -223,7 +224,7 @@ library(zoo)
       group_by(.dots=c("AYSemesterNo"))%>% 
       mutate(SemGPA1=sum(Credit.Hours*Point,na.rm=T)/
                sum(Credit.Hours,na.rm = T))
-    })
+  })
   
   Report22 <- reactive({
     Report21 <- Report21()
@@ -264,8 +265,8 @@ library(zoo)
   })
   
   
-#for Level GPA Calculations data pre-processing
-#1Sem####
+  #for Level GPA Calculations data pre-processing
+  #1Sem####
   Report25 <- reactive({
     Report23new <- Report23new()
     transform(Report23new,
@@ -285,7 +286,7 @@ library(zoo)
     Report26[complete.cases(Report26[ , 13]),]
   })
   
- Report28 <- reactive({
+  Report28 <- reactive({
     Report27 <- Report27()
     Report27 %>% 
       group_by(AcadLevel) %>%
@@ -294,7 +295,7 @@ library(zoo)
                sum(Credit.Hours,na.rm = T))
   })
   
- Report29 <- reactive({
+  Report29 <- reactive({
     Report28 <- Report28()
     subset(Report28, 
            AYSemesterID==max(
@@ -311,9 +312,9 @@ library(zoo)
     Report30 <- Report30()
     na.omit(Report30)
   })
-
-#2Sem####
-
+  
+  #2Sem####
+  
   Report32 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -383,8 +384,8 @@ library(zoo)
     Report40 <- Report40()
     na.omit(Report40)
   })
-
-#Sem3
+  
+  #Sem3
   Report42 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -455,14 +456,14 @@ library(zoo)
     na.omit(Report50)
   })
   
-#4Sem####
+  #4Sem####
   
   Report52 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
               After1Sem=ifelse(
                 AYSemesterID==1 | AYSemesterID==2| 
-                AYSemesterID==3| AYSemesterID==4,
+                  AYSemesterID==3| AYSemesterID==4,
                 yes = 4,no = NA))
   })
   
@@ -528,7 +529,7 @@ library(zoo)
     unique(na.omit(Report60))
   })
   
-#5Sem####
+  #5Sem####
   Report62 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -601,7 +602,7 @@ library(zoo)
     unique(na.omit(Report70))
   })
   
-#6Sem####
+  #6Sem####
   
   Report72 <- reactive({
     Report25 <- Report25()
@@ -674,8 +675,8 @@ library(zoo)
     Report80 <- Report80()
     unique(na.omit(Report80))
   })
-
-#7Sem####
+  
+  #7Sem####
   Report82 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -749,10 +750,10 @@ library(zoo)
     unique(na.omit(Report90))
   })
   
-    
   
-#8Sem####
-
+  
+  #8Sem####
+  
   Report92 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -826,7 +827,7 @@ library(zoo)
     unique(na.omit(Report100))
   })
   
-#9Sem####  
+  #9Sem####  
   Report102 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -901,7 +902,7 @@ library(zoo)
     unique(na.omit(Report110))
   })
   
-#10Sem####
+  #10Sem####
   Report112 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -976,8 +977,8 @@ library(zoo)
     unique(na.omit(Report120))
   })
   
-#11Sem#### 
-
+  #11Sem#### 
+  
   Report122 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -1052,9 +1053,9 @@ library(zoo)
     Report130 <- Report130()
     unique(na.omit(Report130))
   })
-
-#12Sem#### 
-
+  
+  #12Sem#### 
+  
   Report132 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -1129,8 +1130,8 @@ library(zoo)
     Report140 <- Report140()
     unique(na.omit(Report140))
   })
-
-#13Sem####
+  
+  #13Sem####
   
   Report142 <- reactive({
     Report25 <- Report25()
@@ -1207,8 +1208,8 @@ library(zoo)
     Report150 <- Report150()
     unique(na.omit(Report150))
   })
-
-#14Sem####
+  
+  #14Sem####
   
   Report152 <- reactive({
     Report25 <- Report25()
@@ -1285,8 +1286,8 @@ library(zoo)
     Report160 <- Report160()
     unique(na.omit(Report160))
   })
-
-#15Sem####
+  
+  #15Sem####
   
   Report162 <- reactive({
     Report25 <- Report25()
@@ -1365,8 +1366,8 @@ library(zoo)
     unique(na.omit(Report170))
   })  
   
-#16Sem####
-
+  #16Sem####
+  
   Report172 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -1444,8 +1445,8 @@ library(zoo)
     unique(na.omit(Report180))
   })  
   
-    
-#17Sem####
+  
+  #17Sem####
   
   Report182 <- reactive({
     Report25 <- Report25()
@@ -1468,35 +1469,35 @@ library(zoo)
     Report182[complete.cases(Report182[ , 13]),]
   })
   
-    Report184<- reactive({
+  Report184<- reactive({
     Report183 <- Report183()
     Report183[which(duplicated(
-    Report183$Course.Code) | duplicated(
-    Report183$Course.Code, fromLast = TRUE)),]
+      Report183$Course.Code) | duplicated(
+        Report183$Course.Code, fromLast = TRUE)),]
   })
   
-    Report185 <- reactive({
+  Report185 <- reactive({
     Report184 <- Report184()
-          unique(Report184[duplicated(
-                 Report184$Course.Code, 
+    unique(Report184[duplicated(
+      Report184$Course.Code, 
       fromLast = FALSE),1:13])
   })
   
-    Report186 <- reactive({
+  Report186 <- reactive({
     Report184 <- Report184()
     Report185 <- Report185()
-         setdiff(Report184,
-                 Report185)
+    setdiff(Report184,
+            Report185)
   })
   
-    Report187 <- reactive({
+  Report187 <- reactive({
     Report183 <- Report183()
     Report186 <- Report186()
-         setdiff(Report183,
-                 Report186)
+    setdiff(Report183,
+            Report186)
   })
   
-    Report188 <- reactive({
+  Report188 <- reactive({
     Report187 <- Report187()
     Report187 %>% 
       group_by(AcadLevel) %>%
@@ -1506,15 +1507,15 @@ library(zoo)
   })
   
   
-    Report189 <- reactive({
+  Report189 <- reactive({
     Report188 <- Report188()
-          subset(Report188, 
+    subset(Report188, 
            AYSemesterID==max(
              Report188$AYSemesterID),
            select=Student.ID:LGPA)
   })
   
-    Report190 <- reactive({
+  Report190 <- reactive({
     Report181 <- Report181()
     Report189 <- Report189()
     rbind(as.data.frame(Report181),
@@ -1527,7 +1528,7 @@ library(zoo)
     unique(na.omit(Report190))
   })  
   
-#18Sem####
+  #18Sem####
   Report192 <- reactive({
     Report25 <- Report25()
     transform(Report25, 
@@ -1544,17 +1545,17 @@ library(zoo)
                 yes = 18,no = NA))
   })
   
-    Report193 <- reactive({
+  Report193 <- reactive({
     Report192 <- Report192()
     Report192[complete.cases(
-                 Report192[ , 13]),]
+      Report192[ , 13]),]
   })
   
-    Report194<- reactive({
+  Report194<- reactive({
     Report193 <- Report193()
     Report193[which(duplicated(
-                 Report193$Course.Code) | duplicated(
-                 Report193$Course.Code, fromLast = TRUE)),]
+      Report193$Course.Code) | duplicated(
+        Report193$Course.Code, fromLast = TRUE)),]
   })
   
   Report195 <- reactive({
@@ -1603,13 +1604,13 @@ library(zoo)
           as.data.frame(unique(
             Report199[,c(1:3,14)])))
   })
-
+  
   Report201 <- reactive({
     Report200 <-   Report200()
     unique(na.omit(Report200))
   })
   
-#19Sem####
+  #19Sem####
   
   Report202 <- reactive({
     Report25 <- Report25()
@@ -1693,7 +1694,7 @@ library(zoo)
     unique(na.omit(Report210))
   })
   
-#20Sem####
+  #20Sem####
   
   Report212 <- reactive({
     Report25 <- Report25()
@@ -1776,7 +1777,7 @@ library(zoo)
     Report220 <-   Report220()
     unique(na.omit(Report220))
   })
-#21Sem####
+  #21Sem####
   
   Report222 <- reactive({
     Report25 <- Report25()
@@ -1861,8 +1862,8 @@ library(zoo)
     unique(na.omit(Report230))
   })  
   
-####NEW OGPA Calculation Script####
-#for Overall Cumulative GPA @ Diploma First Year
+  ####NEW OGPA Calculation Script####
+  #for Overall Cumulative GPA @ Diploma First Year
   # Dip1stOGPA <- reactive({
   #   Report20 <- Report20()
   #   transform(as.data.frame(Report20),
@@ -1948,7 +1949,7 @@ library(zoo)
   #   setnames(Dip1stOGPA10, columnNames)
   #   
   # })
-#for Overall Cumulative GPA @ Diploma Second Year
+  #for Overall Cumulative GPA @ Diploma Second Year
   Dip2ndOGPA <- reactive({
     Report20 <- Report20()
     transform(as.data.frame(Report20),
@@ -2034,7 +2035,7 @@ library(zoo)
     setnames(Dip2ndOGPA10, columnNames)
     
   })
-#for Overall Cumulative GPA @ Advanced Diploma
+  #for Overall Cumulative GPA @ Advanced Diploma
   AdvOGPA <- reactive({
     Report20 <- Report20()
     transform(as.data.frame(Report20),
@@ -2120,7 +2121,7 @@ library(zoo)
     setnames(AdvOGPA10, columnNames)
     
   })
-#for Overall Cumulative GPA @ Bachelor
+  #for Overall Cumulative GPA @ Bachelor
   BtechOGPA <- reactive({
     Report20 <- Report20()
     transform(as.data.frame(Report20),
@@ -2206,21 +2207,21 @@ library(zoo)
     setnames(BtechOGPA10, columnNames)
     
   })
-
+  
   overallGPAnew <- reactive({
     # Dip1stOGPA11 <- Dip1stOGPA11()
     Dip2ndOGPA11 <- Dip2ndOGPA11()
     AdvOGPA11 <- AdvOGPA11()
     BtechOGPA11 <- BtechOGPA11()
     rbind(#as.data.frame(Dip1stOGPA11),
-          as.data.frame(Dip2ndOGPA11),
-          as.data.frame(AdvOGPA11),
-          as.data.frame(BtechOGPA11))
+      as.data.frame(Dip2ndOGPA11),
+      as.data.frame(AdvOGPA11),
+      as.data.frame(BtechOGPA11))
   })
   
   overallGPAnew1 <- reactive({
     overallGPAnew <- overallGPAnew()
-     as.data.frame(unique(overallGPAnew))
+    as.data.frame(unique(overallGPAnew))
   })
   
   library(dplyr)
@@ -2233,7 +2234,7 @@ library(zoo)
   
   
   
- #Output####     
+  #Output####     
   output$LGPA <- renderTable({
     if(is.null(Report())){return()}
     
@@ -2254,18 +2255,18 @@ library(zoo)
     Report20()
     
     
-    })  
+  })  
   
- #observeEvent(input$uploadedfile, {
- # saveData(Report20())  })
+  #observeEvent(input$uploadedfile, {
+  # saveData(Report20())  })
   
   
-  # output$SemGPA1 <- renderTable({
-  #   if(is.null(Report())){return()}
-  #   
-  #   Report22()
-  #   
-  #   })
+  output$SemGPA1 <- renderTable({
+    if(is.null(Report())){return()}
+    
+    Report22()
+    
+  })
   
   output$SemGPA2 <- renderTable({
     if(is.null(Report())){return()}
@@ -2275,8 +2276,8 @@ library(zoo)
   })
   
   
-
-#Download Handler####  
+  
+  #Download Handler####  
   output$downloadRawData <- downloadHandler(
     filename = function() {
       paste("RawData", ".csv", sep = "")
@@ -2318,12 +2319,12 @@ library(zoo)
       paste("OverallCumGPA", ".csv", sep = "")
     },
     content = function(file) {
-      write.csv(overallGPAnew2(),file, row.names = FALSE)
+      write.csv(overallGPAnew2(),file, row.names = FALSE) #overallGPAnew2()
     }
   )
-
   
-#OBSERVE ####
+  
+  #OBSERVE ####
   
   observeEvent(input$timeOut, { 
     print(paste0("Session (", session$token, ") timed out at: ", Sys.time()))
@@ -2337,8 +2338,8 @@ library(zoo)
   
   
   
-    
-#Summary Statistics####
+  
+  #Summary Statistics####
   # nooftimesuse <- observe({
   #   write.table(Report20, file = "Sem GPA.csv",
   #               sep = ",", row.names = FALSE,
@@ -2346,27 +2347,133 @@ library(zoo)
   #               qmethod = "double")
   # })
   
-
-output$tb <- renderUI({
   
-  if(is.null(Report()))
-    h3("CIMS Transcript Re-calculator Web Application by IT Department")
   
-  else
-    tabsetPanel(
-      tabPanel(
-        "Raw Data", 
-        tableOutput("rawdata")),
-      # tabPanel(
-      #   "Semester GPA1", tableOutput("SemGPA1")),
-      tabPanel(
-        "Semester GPA", tableOutput("SemGPA2")),
-      tabPanel(
-        "Cumulative GPA", tableOutput("LGPA")),
-      tabPanel(
-        "Overall Cumulative GPA", tableOutput("OGPA")))
+  
+  output$sp <- renderUI({
+    
+    if(is.null(Report())){
+      sidebarPanel(
+        fileInput("uploadedfile","Upload the file"), # fileinput() function is used to get the file upload contorl option
+        helpText("Download the Student's POST FOUNDATION Transcript 
+               from the CIMS. Save the extacted Excel File with 
+               XLSX extension file name and upload 
+               on this web app. Prefered filename should be the 
+               student's ID number e.g. 16S12345.xlsx"),
+        br(),
+        helpText("Not Counted (NC) courses should be properly indicated on the transcript. 'P' or 'F' 
+               should be present for Counted Courses on the 'RESULT' column of the transcript."),
+        hr(),
+        div(
+          
+          class = "fluent-footer",
+          div(
+            class = "fluent-footer-legal",
+            div(
+              class = "fluent-footer-legal-left",
+              a("Privacy Policy", href = "#"),
+              " | ",
+              a("Terms of Use", href = "#")
+            ),
+            div(
+              class = "fluent-footer-legal-right",
+              "© 2023 College of Computing and Information Scieces"
+            )
+          )
+          
+        ),
+        tags$footer(
+          style = "text-align: left; padding-top: 10px; font-size: 12px;",
+          "Built by ",
+          tags$a(href = "https://www.google.com/search?q=dr.+eduardo+lacap+jr&sca_esv=1151ff6db26877ce&sxsrf=ACQVn0-Xfwk7ru7Ermw4mtay8FKjabdlzQ%3A1711027846936&ei=hjb8ZYOzGuCI4-EPxJqewAE&ved=0ahUKEwiDjvO3u4WFAxVgxDgGHUSNBxgQ4dUDCBA&uact=5&oq=dr.+eduardo+lacap+jr&gs_lp=Egxnd3Mtd2l6LXNlcnAiFGRyLiBlZHVhcmRvIGxhY2FwIGpyMgUQIRigAUjTFFCoA1ipEnABeACQAQCYAa4BoAGUA6oBAzAuM7gBA8gBAPgBAZgCA6ACqgOYAwCIBgGSBwMwLjOgB6wK&sclient=gws-wiz-serp#ip=1", "Dr. Eduardo M. Lacap, Jr.")
+          #" by Dr. Eduardo M. Lacap, Jr."
+        )
+      )
+    }
+    
+    else{
+      sidebarPanel(
+        helpText("Raw Data - represents the 'cleaned' version of 
+               the student post foundation transcript wherein 
+               'not counted' (NC) and withdrawn (W) courses 
+               were omitted."),
+        downloadButton("downloadRawData", "Raw Data"),
+        br(),
+        # helpText("Semester GPA1 is for a student who had at least 
+        #          one 'mixing status'  semester given that the lower 
+        #          level is not yet completed (e.g. in diploma second year, 
+        #          at least one course is yet to be passed)"),
+        # 
+        # downloadButton("downloadGPA1", "Semester GPA1"),
+        
+        # helpText("Semester GPA2 is for a student who had at least 
+        #          one 'mixing status' semester given that the 
+        #          lower level is already completed (e.g. in diploma 
+        #          second year, all courses passed) OR both levels 
+        #          are already completed (e.g. Diploma 2nd and 
+        #          Advanced Diploma) OR OJT Status Students"),
+        
+        downloadButton("downloadGPA2", "Semester GPA"),
+        br(),
+        downloadButton("downloadLGPA", "Cumulative GPA"),
+        br(),
+        downloadButton("downloadOGPA", "Overall Cum GPA"),
+        # helpText("NOTE: for a student who had NEVER 
+        #          mixed a semester, GPA1 and GPA2 will 
+        #          give the similar results."),
+        tags$hr(),
+        hr(),
+        div(
+          
+          class = "fluent-footer",
+          div(
+            class = "fluent-footer-legal",
+            div(
+              class = "fluent-footer-legal-left",
+              a("Privacy Policy", href = "#"),
+              " | ",
+              a("Terms of Use", href = "#")
+            ),
+            div(
+              class = "fluent-footer-legal-right",
+              "© 2023 College of Computing and Information Scieces"
+            )
+          )
+          
+        ),
+        tags$footer(
+          style = "text-align: left; padding-top: 10px; font-size: 12px;",
+          "Built by ",
+          tags$a(href = "https://www.google.com/search?q=dr.+eduardo+lacap+jr&sca_esv=1151ff6db26877ce&sxsrf=ACQVn0-Xfwk7ru7Ermw4mtay8FKjabdlzQ%3A1711027846936&ei=hjb8ZYOzGuCI4-EPxJqewAE&ved=0ahUKEwiDjvO3u4WFAxVgxDgGHUSNBxgQ4dUDCBA&uact=5&oq=dr.+eduardo+lacap+jr&gs_lp=Egxnd3Mtd2l6LXNlcnAiFGRyLiBlZHVhcmRvIGxhY2FwIGpyMgUQIRigAUjTFFCoA1ipEnABeACQAQCYAa4BoAGUA6oBAzAuM7gBA8gBAPgBAZgCA6ACqgOYAwCIBgGSBwMwLjOgB6wK&sclient=gws-wiz-serp#ip=1", "Dr. Eduardo M. Lacap, Jr.")
+          #" by Dr. Eduardo M. Lacap, Jr."
+        )
+      )
+    }
+    
+  })
+  
+  
+  output$tb <- renderUI({
+    
+    if(is.null(Report()))
+      #h3("CIMS Transcript Re-calculator Web App by College of Computing and Information Sciences")
+      ""
+    else
+      tabsetPanel(
+        tabPanel(
+          "Raw Data", 
+          tableOutput("rawdata")),
+        tabPanel(
+          "Semester GPA1", tableOutput("SemGPA1")),
+        tabPanel(
+          "Semester GPA2", tableOutput("SemGPA2")),
+        tabPanel(
+          "Cumulative GPA", tableOutput("LGPA")),
+        tabPanel(
+          "Overall Cumulative GPA", tableOutput("OGPA")))
   })
   
 })
-  
 
+
+)
