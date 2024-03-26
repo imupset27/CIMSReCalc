@@ -1,7 +1,7 @@
 library(shiny)
 library(auth0)
 
-options(auth0_config_file = "/srv/shiny-server/app")
+setwd("/srv/shiny-server/app")
 timeoutSeconds <- 900
 
 inactivity <- sprintf("function idleTimer() {
