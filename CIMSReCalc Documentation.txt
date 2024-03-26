@@ -1,0 +1,1 @@
+1. Main codes are available at this Github repo. This repo has a 'no expiration' Personal Access Token PAT (GITHUB_PAT). In order to clone the repo, it shld be made PUBLIC with the correct PAT credentials.

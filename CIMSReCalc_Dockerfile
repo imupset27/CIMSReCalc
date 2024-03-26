@@ -1,0 +1,30 @@
+FROM rocker/shiny:4.0.0
+
+WORKDIR /srv/shiny-server/app
+
+
+RUN apt-get update && apt-get install -y git
+
+# Install stable packages from CRAN
+RUN install2.r --error \
+    shiny \
+    auth0 \
+    data.table \
+    glue \
+    readxl \
+    zoo \
+    dplyr
+    
+# Set up environment variable for GitHub credentials
+ARG GITHUB_PAT
+ENV GITHUB_PAT=${GITHUB_PAT}
+
+# Clone the GitHub repository
+RUN git clone https://imupset27:${GITHUB_PAT}@github.com/imupset27/CIMSReCalc_Final.git /srv/shiny-server/app
+
+# Set options for finding auth0 config file
+RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
+
+
+# Run the app
+CMD ["R", "-e", "shiny::runApp('/srv/shiny-server/app/', host='0.0.0.0', port=7860)"]
