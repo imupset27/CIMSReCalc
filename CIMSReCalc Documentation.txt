@@ -8,6 +8,11 @@ Github impuset @yh
 HF lacap_ed @yh
 AuthO oer @gmail
 
+Github has PAT enabled.
+Auth0 has PAT enabled
+
+
+
 WOKRING DOCKERFILE (Latest)
 
 #PUll a docker image from the dockerhub repository. An older version is prefered to have backward compatibility with the packages used on this project
