@@ -19,6 +19,8 @@ RUN install2.r --error \
     
 # Set up environment variable for GitHub credentials
 ARG GITHUB_PAT
+ARG GITHUB_USERNAME
+ARG GITHUB_FILE
 ENV GITHUB_PAT=${GITHUB_PAT}
 
 # Clone the GitHub repository
