@@ -63,3 +63,33 @@ RUN git clone https://${GITHUB_UN}:${GITHUB_PAT}@github.com/${GITHUB_UN}/${GITHU
 RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
 
 CMD ["R", "-e", "shiny::runApp('.', host='0.0.0.0', port=7860)"]
+
+# THIRD WORKING VERSION
+
+FROM rocker/shiny:4.0.0
+
+WORKDIR /srv/shiny-server/app
+
+RUN apt-get update && apt-get install -y git
+
+RUN install2.r --error \
+    shiny \
+    auth0 \
+    data.table \
+    glue \
+    readxl \
+    zoo \
+    dplyr
+
+ARG PAT
+ARG UN
+ARG FILE
+ENV PAT=${PAT}
+ENV UN=${UN}
+ENV FILE=${FILE}
+
+RUN git clone https://${UN}:${PAT}@github.com/${UN}/${FILE}.git /srv/shiny-server/app
+
+RUN echo "options(auth0_find_config_file = '/srv/shiny-server/app/_auth0.yml')" > /usr/local/lib/R/etc/Rprofile.site
+
+CMD ["R", "-e", "shiny::runApp('.', host='0.0.0.0', port=7860)"]
