@@ -4,7 +4,7 @@ library(auth0)
 Sys.setenv(tz="Asia/Muscat")
 
 #setwd("/srv/shiny-server/app")
-timeoutSeconds <- 120
+timeoutSeconds <- 600
 
 inactivity <- sprintf("function idleTimer() {
 var t = setTimeout(logout, %s);
