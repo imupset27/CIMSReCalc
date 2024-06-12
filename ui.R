@@ -29,7 +29,7 @@ idleTimer();", timeoutSeconds*1000, timeoutSeconds, timeoutSeconds*1000)
 auth0_ui(shinyUI(fluidPage(
   tags$script(inactivity),
   titlePanel(
-    h4("CIMS Transcript Re-Calculator Web App"),
+    h4("UTAS CIMS Transcript Re-Calculator"),
     windowTitle = "CIMS ReCalc"
     
   ),
