@@ -82,8 +82,8 @@ auth0_server(shinyServer(function(input,output,session){
     transform(
       as.data.frame(Report4), 
       AYSem = substr(Report4[,1],
-                     3,
-                     26
+                     1,
+                     24
       )
     )
   }) 
