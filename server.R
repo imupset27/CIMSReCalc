@@ -94,8 +94,8 @@ auth0_server(shinyServer(function(input,output,session){
     transform(
       as.data.frame(Report5), 
       Yearonly = substr(Report5[,1],
-                        3,
-                        6
+                        1,
+                        4
       )
     )
   })
