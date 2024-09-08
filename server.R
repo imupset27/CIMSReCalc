@@ -110,7 +110,7 @@ auth0_server(shinyServer(function(input,output,session){
   
   Report8 <- reactive({
     Report7 <- Report7()
-    tail(Report7, -6)
+    tail(Report7, -7)
   })
   
   
